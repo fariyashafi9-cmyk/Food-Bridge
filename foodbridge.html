@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FoodBridge — Bachi Khucha, Kisi Ki Zaroorat</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a7a5e;
+    --green-light: #e8f5f0;
+    --green-mid: #2fa87f;
+    --green-dark: #0f4d3a;
+    --amber: #e8882a;
+    --amber-light: #fdf3e7;
+    --red: #c94040;
+    --red-light: #fdf0f0;
+    --text: #1a1a1a;
+    --text-muted: #6b7280;
+    --text-faint: #9ca3af;
+    --bg: #fafaf8;
+    --card: #ffffff;
+    --border: #e8e6e0;
+    --border-dark: #d1cec6;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    --shadow-md: 0 4px 24px rgba(0,0,0,.09);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+  .serif { font-family: 'DM Serif Display', serif; }
+
+  /* ── PAGE SYSTEM ── */
+  .page { display: none; min-height: 100vh; }
+  .page.active { display: block; }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,248,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px; cursor: pointer;
+    font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text);
+  }
+  .logo-mark {
+    width: 32px; height: 32px; background: var(--green); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { width: 18px; height: 18px; fill: white; }
+  .nav-links { display: flex; align-items: center; gap: 6px; }
+  .nav-link {
+    padding: 7px 14px; border-radius: var(--radius-sm); font-size: 14px;
+    color: var(--text-muted); cursor: pointer; transition: all .15s;
+    border: none; background: none; font-family: 'DM Sans', sans-serif;
+  }
+  .nav-link:hover { background: var(--green-light); color: var(--green); }
+  .nav-btn {
+    padding: 8px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--border-dark); background: var(--card);
+    color: var(--text); transition: all .15s; font-family: 'DM Sans', sans-serif;
+  }
+  .nav-btn:hover { border-color: var(--green); color: var(--green); }
+  .nav-btn-fill {
+    background: var(--green); color: white; border-color: var(--green); margin-left: 4px;
+  }
+  .nav-btn-fill:hover { background: var(--green-dark); border-color: var(--green-dark); color: white; }
+  .live-badge {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--green); font-weight: 500;
+    padding: 5px 11px; background: var(--green-light); border-radius: 20px;
+  }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.85)} }
+
+  /* ── HOMEPAGE ── */
+  .hero {
+    padding: 80px 28px 60px;
+    max-width: 780px; margin: 0 auto; text-align: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; color: var(--green); font-weight: 500;
+    padding: 5px 14px; background: var(--green-light);
+    border-radius: 20px; margin-bottom: 24px; border: 1px solid #c0e4d8;
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(38px, 6vw, 60px);
+    line-height: 1.1; color: var(--text); margin-bottom: 20px;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 em { color: var(--green); font-style: italic; }
+  .hero p { font-size: 17px; color: var(--text-muted); max-width: 520px; margin: 0 auto 32px; line-height: 1.7; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+  .btn-lg {
+    padding: 13px 28px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500;
+    cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .btn-green { background: var(--green); color: white; }
+  .btn-green:hover { background: var(--green-dark); transform: translateY(-1px); }
+  .btn-white { background: var(--card); color: var(--text); border: 1.5px solid var(--border-dark); }
+  .btn-white:hover { border-color: var(--green); color: var(--green); transform: translateY(-1px); }
+
+  .stats-strip {
+    display: grid; grid-template-columns: repeat(4,1fr);
+    border: 1px solid var(--border); border-radius: var(--radius);
+    overflow: hidden; background: var(--card);
+    box-shadow: var(--shadow); max-width: 780px; margin: 0 auto;
+  }
+  .stat-cell {
+    padding: 22px 16px; text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-num { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--green); }
+  .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+  .section { padding: 56px 28px; max-width: 1000px; margin: 0 auto; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  .section-title { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); }
+  .see-all { font-size: 13px; color: var(--green); cursor: pointer; font-weight: 500; }
+  .see-all:hover { text-decoration: underline; }
+
+  /* Food Cards */
+  .food-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 16px; }
+  .food-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; box-shadow: var(--shadow); transition: all .2s; cursor: pointer;
+  }
+  .food-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: var(--border-dark); }
+  .food-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+  .tag {
+    display: inline-block; font-size: 11px; font-weight: 500;
+    padding: 3px 10px; border-radius: 20px;
+  }
+  .tag-green { background: var(--green-light); color: var(--green-dark); border: 1px solid #c0e4d8; }
+  .tag-amber { background: var(--amber-light); color: #7a4810; border: 1px solid #f5d5a8; }
+  .tag-blue { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+  .time-ago { font-size: 11px; color: var(--text-faint); }
+  .food-name { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .food-qty { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+  .food-donor { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+  .donor-dot { width: 20px; height: 20px; border-radius: 6px; background: var(--green-light); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; color: var(--green-dark); flex-shrink: 0; }
+  .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .status-dot-row { display: flex; align-items: center; gap: 5px; font-size: 12px; }
+  .sdot { width: 6px; height: 6px; border-radius: 50%; }
+  .sdot-green { background: var(--green); }
+  .sdot-amber { background: var(--amber); }
+  .sdot-red { background: #9ca3af; }
+  .claim-btn {
+    padding: 6px 14px; background: var(--green); color: white; border: none;
+    border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .claim-btn:hover { background: var(--green-dark); }
+  .claimed-label { font-size: 12px; color: var(--amber); font-weight: 500; }
+
+  /* NGO Cards */
+  .ngo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px,1fr)); gap: 16px; }
+  .ngo-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 20px; box-shadow: var(--shadow); display: flex; gap: 14px;
+  }
+  .ngo-icon {
+    width: 44px; height: 44px; border-radius: 10px; background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--green-dark); flex-shrink: 0;
+  }
+  .ngo-name { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 2px; }
+  .ngo-area { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
+  .ngo-stat { font-size: 12px; color: var(--green); font-weight: 500; }
+  .verified { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: var(--green-dark); background: var(--green-light); border: 1px solid #c0e4d8; padding: 2px 8px; border-radius: 20px; margin-top: 6px; }
+
+  /* How it works */
+  .how-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+  .how-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 28px 22px; text-align: center; position: relative; overflow: hidden;
+  }
+  .how-card::before {
+    content: attr(data-step);
+    position: absolute; top: -8px; right: 14px;
+    font-family: 'DM Serif Display', serif; font-size: 72px;
+    color: var(--green-light); line-height: 1; z-index: 0; pointer-events: none;
+  }
+  .how-icon { font-size: 28px; margin-bottom: 14px; position: relative; z-index: 1; }
+  .how-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; position: relative; z-index: 1; }
+  .how-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; position: relative; z-index: 1; }
+
+  /* CTA Banner */
+  .cta-banner {
+    margin: 0 28px 56px; border-radius: var(--radius);
+    background: var(--green-dark); padding: 48px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; flex-wrap: wrap; max-width: 944px; margin-left: auto; margin-right: auto;
+  }
+  .cta-banner h2 { font-family: 'DM Serif Display', serif; font-size: 28px; color: white; margin-bottom: 8px; }
+  .cta-banner p { font-size: 15px; color: rgba(255,255,255,.75); max-width: 420px; }
+  .btn-white-solid {
+    padding: 12px 28px; background: white; color: var(--green-dark); border: none;
+    border-radius: var(--radius-sm); font-size: 15px; font-weight: 600;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; white-space: nowrap;
+  }
+  .btn-white-solid:hover { transform: translateY(-1px); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border); padding: 24px 28px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  footer .left { font-size: 13px; color: var(--text-muted); }
+  footer .right { display: flex; gap: 20px; }
+  footer .right span { font-size: 13px; color: var(--text-muted); cursor: pointer; }
+  footer .right span:hover { color: var(--green); }
+
+  /* ── DONOR DASHBOARD ── */
+  .dash-layout { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); min-height: calc(100vh - 60px); }
+  .dash-main { padding: 32px 28px; border-right: 1px solid var(--border); }
+  .dash-sidebar { padding: 28px; background: #f7f7f5; }
+  .dash-title { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--text); margin-bottom: 6px; }
+  .dash-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+  .form-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 24px; box-shadow: var(--shadow);
+  }
+  .form-card-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; display: block; font-weight: 500; }
+  .form-input {
+    width: 100%; padding: 10px 13px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 14px; background: var(--bg);
+    color: var(--text); font-family: 'DM Sans', sans-serif;
+    transition: border-color .15s; outline: none;
+  }
+  .form-input:focus { border-color: var(--green); background: white; }
+  select.form-input { cursor: pointer; }
+  textarea.form-input { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .window-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .window-btn {
+    padding: 9px 10px; font-size: 12px; border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--bg); color: var(--text-muted);
+    cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; text-align: center;
+  }
+  .window-btn:hover { border-color: var(--green); color: var(--green); }
+  .window-btn.selected { border-color: var(--green); background: var(--green-light); color: var(--green-dark); font-weight: 500; }
+  .submit-btn {
+    width: 100%; padding: 12px; background: var(--green); color: white; border: none;
+    border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; margin-top: 8px; transition: all .15s;
+  }
+  .submit-btn:hover { background: var(--green-dark); }
+
+  /* Success toast */
+  .toast {
+    display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: var(--green-dark); color: white; padding: 14px 24px; border-radius: var(--radius);
+    font-size: 14px; font-weight: 500; z-index: 999; box-shadow: var(--shadow-md);
+    animation: slideUp .3s ease;
+  }
+  .toast.show { display: block; }
+  @keyframes slideUp { from{transform:translateX(-50%) translateY(20px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
+
+  /* Impact sidebar */
+  .impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .impact-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+  .impact-num { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--green); }
+  .impact-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .hist-title { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+  .hist-list { display: flex; flex-direction: column; gap: 10px; }
+  .hist-item {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 13px; transition: all .15s;
+  }
+  .hist-item:hover { border-color: var(--border-dark); }
+  .hist-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+  .hist-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .hist-detail { font-size: 12px; color: var(--text-muted); }
+  .hist-ngo { font-size: 12px; color: var(--green); margin-top: 4px; }
+  .badge-delivered { background: var(--green-light); color: var(--green-dark); border: 1px solid #c0e4d8; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-pending { background: var(--amber-light); color: #7a4810; border: 1px solid #f5d5a8; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-live { background: var(--green-light); color: var(--green); border: 1px solid #c0e4d8; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .badge-expired { background: #f3f4f6; color: var(--text-faint); border: 1px solid var(--border); font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .cert-box {
+    margin-top: 20px; padding: 14px 16px;
+    background: linear-gradient(135deg, var(--green-light), #d4f0e4);
+    border: 1px solid #b0dccb; border-radius: var(--radius-sm);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .cert-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .cert-text { font-size: 12px; color: var(--green-dark); line-height: 1.5; font-weight: 500; }
+
+  /* ── NGO DASHBOARD ── */
+  .ngo-topbar {
+    padding: 16px 28px; background: var(--card); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ngo-dash-layout { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); min-height: calc(100vh - 116px); }
+  .ngo-main { padding: 28px; border-right: 1px solid var(--border); }
+  .ngo-sidebar-content { padding: 28px; background: #f7f7f5; }
+  .alert-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 28px; }
+  .alert-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; box-shadow: var(--shadow); transition: all .2s;
+  }
+  .alert-card.urgent { border-color: var(--green); border-left-width: 3px; }
+  .alert-card:hover { box-shadow: var(--shadow-md); }
+  .alert-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .alert-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .alert-meta { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6; }
+  .alert-meta strong { color: var(--text); }
+  .alert-actions { display: flex; justify-content: space-between; align-items: center; }
+  .timer { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--amber); font-weight: 500; }
+  .timer-ring { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); }
+  .action-btns { display: flex; gap: 8px; }
+  .btn-skip {
+    padding: 7px 14px; background: transparent; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .btn-skip:hover { border-color: var(--border-dark); color: var(--text); }
+  .btn-accept {
+    padding: 7px 18px; background: var(--green); color: white; border: none;
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .btn-accept:hover { background: var(--green-dark); }
+  .btn-delivered {
+    padding: 7px 16px; background: var(--amber-light); color: #7a4810; border: 1px solid #f5d5a8;
+    border-radius: var(--radius-sm); font-size: 12px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; transition: all .15s;
+  }
+  .btn-delivered:hover { background: #fae4c0; }
+  .ngo-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+  .ngo-stat-box { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+  .ngo-stat-num { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--green); }
+  .ngo-stat-lbl { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .vol-list { display: flex; flex-direction: column; gap: 8px; }
+  .vol-item {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 11px 14px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .vol-left { display: flex; align-items: center; gap: 10px; }
+  .vol-avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--green-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--green-dark);
+  }
+  .vol-name { font-size: 13px; font-weight: 500; color: var(--text); }
+  .vol-zone { font-size: 11px; color: var(--text-muted); }
+  .status-online { font-size: 11px; color: var(--green); font-weight: 500; }
+  .status-busy { font-size: 11px; color: var(--amber); font-weight: 500; }
+  .map-box {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    height: 170px; margin-bottom: 20px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px; position: relative; overflow: hidden;
+  }
+  .map-bg {
+    position: absolute; inset: 0; opacity: .06;
+    background-image: repeating-linear-gradient(0deg, var(--green) 0, var(--green) 1px, transparent 1px, transparent 32px),
+                      repeating-linear-gradient(90deg, var(--green) 0, var(--green) 1px, transparent 1px, transparent 32px);
+  }
+  .map-pin-group { display: flex; gap: 28px; position: relative; z-index: 1; }
+  .map-pin-item { text-align: center; }
+  .map-pin-circle { width: 14px; height: 14px; border-radius: 50%; margin: 0 auto 4px; border: 2px solid; }
+  .pin-available { background: var(--green-light); border-color: var(--green); }
+  .pin-claimed { background: var(--amber-light); border-color: var(--amber); }
+  .pin-done { background: #f3f4f6; border-color: #d1d5db; }
+  .map-pin-lbl { font-size: 10px; color: var(--text-muted); }
+  .map-label { font-size: 12px; color: var(--text-muted); position: relative; z-index: 1; }
+
+  /* ── MODAL (post success) ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,.4); z-index: 200;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border-radius: var(--radius); padding: 36px 32px; max-width: 400px;
+    width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,.18); text-align: center; animation: popIn .2s ease;
+  }
+  @keyframes popIn { from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1} }
+  .modal-icon { font-size: 40px; margin-bottom: 14px; }
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--text); margin-bottom: 8px; }
+  .modal-desc { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+  .modal-btn { padding: 11px 32px; background: var(--green); color: white; border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-dark); border-radius: 3px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .page.active { animation: fadeIn .3s ease; }
+  .food-card, .ngo-card, .alert-card { animation: fadeIn .4s ease both; }
+
+  @media(max-width: 768px) {
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .how-grid, .dash-layout, .ngo-dash-layout { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    .dash-sidebar, .ngo-sidebar-content { border-top: 1px solid var(--border); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAVIGATION ── -->
+<nav>
+  <div class="nav-logo" onclick="showPage('home')">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-5h2v2h-2zm0-8h2v6h-2z"/></svg>
+    </div>
+    FoodBridge
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="showPage('home')">Home</button>
+    <button class="nav-link" onclick="showPage('home'); setTimeout(()=>document.getElementById('listings').scrollIntoView({behavior:'smooth'}),100)">Listings</button>
+    <button class="nav-link" onclick="showPage('home'); setTimeout(()=>document.getElementById('ngos').scrollIntoView({behavior:'smooth'}),100)">NGOs</button>
+    <div class="live-badge"><div class="pulse"></div>12 live listings</div>
+    <button class="nav-btn" onclick="showPage('ngo')">NGO Login</button>
+    <button class="nav-btn nav-btn-fill" onclick="showPage('donor')">Khana Donate Karein</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════
+     PAGE 1: HOMEPAGE
+══════════════════════════════ -->
+<div id="page-home" class="page active">
+
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <div class="pulse"></div>
+      Karachi mein aaj 2,841 meals rescue hue
+    </div>
+    <h1 class="serif">Bachi khucha khana,<br><em>kisi ki zaroorat</em></h1>
+    <p>Restaurants, hotels aur shaadi halls ka surplus khana near-by verified NGOs tak pahunchao — bilkul free, sirf 2 minute mein.</p>
+    <div class="hero-actions">
+      <button class="btn-lg btn-green" onclick="showPage('donor')">Khana List Karein</button>
+      <button class="btn-lg btn-white" onclick="showPage('ngo')">NGO ke liye Register</button>
+    </div>
+    <div class="stats-strip">
+      <div class="stat-cell"><div class="stat-num">2,841</div><div class="stat-lbl">Meals rescued<br>this month</div></div>
+      <div class="stat-cell"><div class="stat-num">38</div><div class="stat-lbl">Active donors<br>in Karachi</div></div>
+      <div class="stat-cell"><div class="stat-num">14</div><div class="stat-lbl">Verified NGOs<br>on network</div></div>
+      <div class="stat-cell"><div class="stat-num">22 min</div><div class="stat-lbl">Average<br>claim time</div></div>
+    </div>
+  </div>
+
+  <!-- Live Listings -->
+  <div class="section" id="listings">
+    <div class="section-header">
+      <h2 class="section-title">Abhi Available — Karachi</h2>
+      <span class="see-all">Sab dekhein →</span>
+    </div>
+    <div class="food-grid" id="food-grid">
+      <!-- JS se populate hoga -->
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="section" style="padding-top: 0;">
+    <div class="section-header">
+      <h2 class="section-title">Kaise Kaam Karta Hai</h2>
+    </div>
+    <div class="how-grid">
+      <div class="how-card" data-step="1">
+        <div class="how-icon">📋</div>
+        <div class="how-title">Listing post karein</div>
+        <div class="how-desc">Khane ki qism, quantity aur pickup time batao — sirf 2 minute ka kaam.</div>
+      </div>
+      <div class="how-card" data-step="2">
+        <div class="how-icon">🔔</div>
+        <div class="how-title">NGOs ko alert jaata hai</div>
+        <div class="how-desc">Paas ke verified NGOs ko turant SMS aur app notification jaati hai.</div>
+      </div>
+      <div class="how-card" data-step="3">
+        <div class="how-icon">✅</div>
+        <div class="how-title">Pickup aur delivery</div>
+        <div class="how-desc">NGO claim kare, khana pick kare, aur zarooratmand logon tak pahunche.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NGOs -->
+  <div class="section" id="ngos" style="padding-top: 0;">
+    <div class="section-header">
+      <h2 class="section-title">Verified NGOs — Karachi Network</h2>
+      <span class="see-all">Join karein →</span>
+    </div>
+    <div class="ngo-grid">
+      <div class="ngo-card">
+        <div class="ngo-icon">SE</div>
+        <div>
+          <div class="ngo-name">Saylani Welfare</div>
+          <div class="ngo-area">📍 Gulshan, Korangi, Landhi</div>
+          <div class="ngo-stat">247 pickups this month</div>
+          <div class="verified">✓ Verified NGO</div>
+        </div>
+      </div>
+      <div class="ngo-card">
+        <div class="ngo-icon">CK</div>
+        <div>
+          <div class="ngo-name">Chhipa Welfare</div>
+          <div class="ngo-area">📍 Saddar, Lyari, Keamari</div>
+          <div class="ngo-stat">189 pickups this month</div>
+          <div class="verified">✓ Verified NGO</div>
+        </div>
+      </div>
+      <div class="ngo-card">
+        <div class="ngo-icon">AF</div>
+        <div>
+          <div class="ngo-name">Ansar Foundation</div>
+          <div class="ngo-area">📍 DHA, Clifton, Defence</div>
+          <div class="ngo-stat">94 pickups this month</div>
+          <div class="verified">✓ Verified NGO</div>
+        </div>
+      </div>
+      <div class="ngo-card">
+        <div class="ngo-icon">EO</div>
+        <div>
+          <div class="ngo-name">Edhi Foundation</div>
+          <div class="ngo-area">📍 City-wide, all areas</div>
+          <div class="ngo-stat">312 pickups this month</div>
+          <div class="verified">✓ Verified NGO</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-banner" style="margin: 0 auto 56px; max-width: 944px; margin-left: 28px; margin-right: 28px;">
+    <div>
+      <h2>Aaj pehla qadam uthaein</h2>
+      <p>Sirf 2 minute mein apna pehla food listing post karein. Karachi ke hazaron log aapka intezaar kar rahe hain.</p>
+    </div>
+    <button class="btn-white-solid" onclick="showPage('donor')">Abhi Shuru Karein →</button>
+  </div>
+
+  <footer>
+    <div class="left">© 2025 FoodBridge — Karachi, Pakistan · Bachi khucha, kisi ki zaroorat</div>
+    <div class="right">
+      <span>Hamare baare mein</span>
+      <span>NGO register</span>
+      <span>Contact</span>
+      <span>Urdu | English</span>
+    </div>
+  </footer>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 2: DONOR DASHBOARD
+══════════════════════════════ -->
+<div id="page-donor" class="page">
+  <div class="dash-layout">
+    <div class="dash-main">
+      <div class="dash-title">Nayi Food Listing Post Karein</div>
+      <div class="dash-sub">Aapka khana kisi ke kaam aa sakta hai — sirf 2 minute lagenge</div>
+
+      <div class="form-card">
+        <div class="form-card-title">🍱 Food ki details bharein</div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Khane ki qism</label>
+            <select class="form-input" id="food-type">
+              <option value="">Chunein...</option>
+              <option>🍛 Cooked food (paka hua)</option>
+              <option>🥬 Raw / uncooked</option>
+              <option>🥐 Bakery / packaged</option>
+              <option>🎊 Wedding / event surplus</option>
+              <option>🍎 Fruit & vegetables</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Estimated portions (taqreeban)</label>
+            <input type="number" class="form-input" id="food-qty" placeholder="Jaise: 50" min="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Khane ki description</label>
+          <textarea class="form-input" id="food-desc" placeholder="Jaise: Biryani, daal, roti — aaj raat ki shaadi ka bacha hua..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Donor ka naam</label>
+            <input type="text" class="form-input" id="donor-name" placeholder="Restaurant / ghar / hall ka naam">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone number</label>
+            <input type="tel" class="form-input" id="donor-phone" placeholder="03XX-XXXXXXX">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pickup address</label>
+          <input type="text" class="form-input" id="donor-address" placeholder="Gali, mohalla, city area — jaise: DHA Phase 4, Karachi">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Pickup window — kab tak available hai?</label>
+          <div class="window-grid" id="window-grid">
+            <div class="window-btn" onclick="selectWindow(this)">⚡ Abhi — 1 ghante mein</div>
+            <div class="window-btn" onclick="selectWindow(this)">🕑 2 ghante mein</div>
+            <div class="window-btn" onclick="selectWindow(this)">🌙 Aaj raat tak</div>
+            <div class="window-btn" onclick="selectWindow(this)">🌅 Kal subah tak</div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label">Special note (optional)</label>
+          <input type="text" class="form-input" id="food-note" placeholder="Koi allergy info, packaging details, ya koi khaas baat...">
+        </div>
+
+        <button class="submit-btn" onclick="submitListing()">
+          Listing Post Karein — NGOs ko turant alert jayegi 🔔
+        </button>
+      </div>
+    </div>
+
+    <!-- Donor Sidebar -->
+    <div class="dash-sidebar">
+      <div class="impact-grid">
+        <div class="impact-box"><div class="impact-num" id="total-meals">847</div><div class="impact-lbl">Total meals rescued</div></div>
+        <div class="impact-box"><div class="impact-num" id="total-donations">23</div><div class="impact-lbl">Total donations</div></div>
+        <div class="impact-box"><div class="impact-num">96%</div><div class="impact-lbl">Pickup success rate</div></div>
+        <div class="impact-box"><div class="impact-num">22 min</div><div class="impact-lbl">Avg claim time</div></div>
+      </div>
+
+      <div class="hist-title">Purani listings</div>
+      <div class="hist-list" id="donor-history">
+        <div class="hist-item">
+          <div class="hist-top"><span class="hist-name">Biryani + Raita</span><span class="badge-live">Live</span></div>
+          <div class="hist-detail">40 portions · DHA Phase 4 · Abhi</div>
+          <div class="hist-ngo">Claim pending...</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-top"><span class="hist-name">Karahi Gosht</span><span class="badge-delivered">Delivered</span></div>
+          <div class="hist-detail">30 portions · 2 din pehle</div>
+          <div class="hist-ngo">✓ Saylani Welfare ne pick kiya</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-top"><span class="hist-name">Dal + Roti</span><span class="badge-delivered">Delivered</span></div>
+          <div class="hist-detail">55 portions · 5 din pehle</div>
+          <div class="hist-ngo">✓ Chhipa Welfare ne pick kiya</div>
+        </div>
+        <div class="hist-item">
+          <div class="hist-top"><span class="hist-name">Mixed appetizers</span><span class="badge-expired">Expired</span></div>
+          <div class="hist-detail">20 portions · 8 din pehle</div>
+          <div class="hist-ngo" style="color:var(--text-faint);">Koi claim nahi aaya</div>
+        </div>
+      </div>
+
+      <div class="cert-box">
+        <div class="cert-icon">🏅</div>
+        <div class="cert-text">Aapka monthly impact certificate tayyar hai!<br><span style="cursor:pointer;text-decoration:underline;">Download karein aur share karein</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     PAGE 3: NGO DASHBOARD
+══════════════════════════════ -->
+<div id="page-ngo" class="page">
+  <div class="ngo-topbar">
+    <div>
+      <div style="font-size:16px;font-weight:600;color:var(--text);">Saylani Welfare — NGO Dashboard</div>
+      <div style="font-size:13px;color:var(--text-muted);">Karachi network · Gulshan, Korangi, Landhi zones</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="live-badge"><div class="pulse"></div>4 naye alerts</div>
+      <button class="nav-btn">Settings</button>
+    </div>
+  </div>
+
+  <div class="ngo-dash-layout">
+    <div class="ngo-main">
+      <div style="font-size:16px;font-weight:600;margin-bottom:16px;">Live Alerts — Aapke Area Mein</div>
+      <div class="alert-list" id="alert-list">
+        <!-- JS se populate hoga -->
+      </div>
+    </div>
+
+    <div class="ngo-sidebar-content">
+      <div style="font-size:15px;font-weight:600;margin-bottom:14px;">Is Maheene Ka Summary</div>
+      <div class="ngo-stats-grid">
+        <div class="ngo-stat-box"><div class="ngo-stat-num" id="ngo-pickups">247</div><div class="ngo-stat-lbl">Pickups complete</div></div>
+        <div class="ngo-stat-box"><div class="ngo-stat-num">6,840</div><div class="ngo-stat-lbl">Meals delivered</div></div>
+        <div class="ngo-stat-box"><div class="ngo-stat-num">38 min</div><div class="ngo-stat-lbl">Avg claim time</div></div>
+        <div class="ngo-stat-box"><div class="ngo-stat-num">96%</div><div class="ngo-stat-lbl">Success rate</div></div>
+      </div>
+
+      <div class="map-box">
+        <div class="map-bg"></div>
+        <div class="map-label">Karachi — Active listings map</div>
+        <div class="map-pin-group">
+          <div class="map-pin-item"><div class="map-pin-circle pin-available"></div><div class="map-pin-lbl">Available (8)</div></div>
+          <div class="map-pin-item"><div class="map-pin-circle pin-claimed"></div><div class="map-pin-lbl">Claimed (3)</div></div>
+          <div class="map-pin-item"><div class="map-pin-circle pin-done"></div><div class="map-pin-lbl">Delivered (1)</div></div>
+        </div>
+        <div style="font-size:10px;color:var(--text-faint);position:relative;z-index:1;">Google Maps — production mein integrate hoga</div>
+      </div>
+
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px;">Active Volunteers — Aaj</div>
+      <div class="vol-list">
+        <div class="vol-item">
+          <div class="vol-left">
+            <div class="vol-avatar">AB</div>
+            <div><div class="vol-name">Ahmed Bhai</div><div class="vol-zone">Gulshan zone · pickup en route</div></div>
+          </div>
+          <span class="status-busy">Busy</span>
+        </div>
+        <div class="vol-item">
+          <div class="vol-left">
+            <div class="vol-avatar">SR</div>
+            <div><div class="vol-name">Sana Rehman</div><div class="vol-zone">DHA / Clifton zone</div></div>
+          </div>
+          <span class="status-online">Available</span>
+        </div>
+        <div class="vol-item">
+          <div class="vol-left">
+            <div class="vol-avatar">MK</div>
+            <div><div class="vol-name">Moiz Khan</div><div class="vol-zone">Saddar / Lyari zone</div></div>
+          </div>
+          <span class="status-online">Available</span>
+        </div>
+        <div class="vol-item">
+          <div class="vol-left">
+            <div class="vol-avatar">FA</div>
+            <div><div class="vol-name">Fatima Asghar</div><div class="vol-zone">Korangi / Landhi zone</div></div>
+          </div>
+          <span class="status-online">Available</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="success-modal">
+  <div class="modal">
+    <div class="modal-icon">🎉</div>
+    <div class="modal-title">Listing Post Ho Gayi!</div>
+    <div class="modal-desc">Aapki listing live ho gayi hai. Near-by NGOs ko turant SMS aur app alert bhej diya gaya hai. Insha'Allah jaldi pickup ho jaayegi!</div>
+    <button class="modal-btn" onclick="closeModal()">Theek Hai, Shukriya!</button>
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── DATA ──
+  const listings = [
+    { id: 1, name: "Biryani + Raita", type: "Cooked food", qty: "~40 portions", location: "DHA Phase 4", donor: "Kolachi Restaurant", initials: "KR", time: "18 min pehle", status: "available", tag: "tag-green" },
+    { id: 2, name: "Bread + Pastries", type: "Bakery items", qty: "~60 pieces", location: "Saddar", donor: "Gul Ahmed Bakery", initials: "GA", time: "45 min pehle", status: "available", tag: "tag-amber" },
+    { id: 3, name: "Wedding Surplus", type: "Event surplus", qty: "~120 portions", location: "Gulshan-e-Iqbal", donor: "Al-Sehat Hall", initials: "AS", time: "1 ghanta pehle", status: "claimed", tag: "tag-blue" },
+    { id: 4, name: "Dal + Chapati", type: "Cooked food", qty: "~35 portions", location: "North Nazimabad", donor: "Cafe Lazeez", initials: "CL", time: "2 ghante pehle", status: "available", tag: "tag-green" },
+    { id: 5, name: "Fresh Vegetables", type: "Raw produce", qty: "~25 kg", location: "Liaquatabad", donor: "Hafiz Fruits & Veg", initials: "HF", time: "3 ghante pehle", status: "available", tag: "tag-green" },
+    { id: 6, name: "Naan + Salan", type: "Cooked food", qty: "~50 portions", location: "Clifton Block 5", donor: "Bundoo Khan", initials: "BK", time: "4 ghante pehle", status: "available", tag: "tag-green" },
+  ];
+
+  const alerts = [
+    { id: 1, name: "Biryani + Raita — 40 portions", donor: "Kolachi Restaurant", area: "DHA Phase 4", dist: "3.2 km", window: "Agle 1 ghante mein", timer: "47 minute bache hain", status: "new", urgent: true },
+    { id: 2, name: "Bread + Pastries — 60 pcs", donor: "Gul Ahmed Bakery", area: "Saddar", dist: "5.8 km", window: "Aaj raat tak", timer: "3 ghante 12 minute", status: "new", urgent: true },
+    { id: 3, name: "Wedding Surplus — 120 portions", donor: "Al-Sehat Hall", area: "Gulshan", dist: "7.1 km", window: "Kal subah tak", timer: "", status: "claimed", urgent: false },
+    { id: 4, name: "Dal + Chapati — 35 portions", donor: "Cafe Lazeez", area: "North Nazimabad", dist: "6.4 km", window: "—", timer: "", status: "delivered", urgent: false },
+  ];
+
+  let claimedListings = {};
+  let alertStatuses = {};
+  alerts.forEach(a => alertStatuses[a.id] = a.status);
+
+  // ── PAGE NAVIGATION ──
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (name === 'home') renderListings();
+    if (name === 'ngo') renderAlerts();
+  }
+
+  // ── RENDER LISTINGS (Homepage) ──
+  function renderListings() {
+    const grid = document.getElementById('food-grid');
+    if (!grid) return;
+    grid.innerHTML = listings.map(l => {
+      const isClaimed = claimedListings[l.id] || l.status === 'claimed';
+      return `
+        <div class="food-card">
+          <div class="food-card-top">
+            <span class="tag ${l.tag}">${l.type}</span>
+            <span class="time-ago">${l.time}</span>
+          </div>
+          <div class="food-name">${l.name}</div>
+          <div class="food-qty">${l.qty} · ${l.location}</div>
+          <div class="food-donor">
+            <div class="donor-dot">${l.initials}</div>
+            ${l.donor}
+          </div>
+          <div class="card-footer">
+            <div class="status-dot-row">
+              <div class="sdot ${isClaimed ? 'sdot-amber' : 'sdot-green'}"></div>
+              <span style="color:${isClaimed ? 'var(--amber)' : 'var(--green)'};font-size:12px;font-weight:500;">${isClaimed ? 'Claimed' : 'Available'}</span>
+            </div>
+            ${isClaimed
+              ? `<span class="claimed-label">Pickup pending</span>`
+              : `<button class="claim-btn" onclick="claimListing(${l.id}, this)">Claim karein</button>`
+            }
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function claimListing(id, btn) {
+    claimedListings[id] = true;
+    btn.closest('.card-footer').innerHTML = `
+      <div class="status-dot-row"><div class="sdot sdot-amber"></div><span style="color:var(--amber);font-size:12px;font-weight:500;">Claimed</span></div>
+      <span class="claimed-label">Pickup pending</span>`;
+    showToast('✓ Listing claim ho gayi! NGO ko confirm kar diya gaya.');
+  }
+
+  // ── RENDER ALERTS (NGO Dashboard) ──
+  function renderAlerts() {
+    const list = document.getElementById('alert-list');
+    if (!list) return;
+    list.innerHTML = alerts.map(a => {
+      const status = alertStatuses[a.id] || a.status;
+      let badgeHtml = '';
+      let actionsHtml = '';
+
+      if (status === 'new') {
+        badgeHtml = `<span class="tag tag-green">Naya</span>`;
+        actionsHtml = `
+          <div class="alert-actions">
+            ${a.timer ? `<div class="timer"><div class="timer-ring"></div>${a.timer}</div>` : '<div></div>'}
+            <div class="action-btns">
+              <button class="btn-skip" onclick="skipAlert(${a.id})">Skip</button>
+              <button class="btn-accept" onclick="acceptAlert(${a.id})">Claim Karein</button>
+            </div>
+          </div>`;
+      } else if (status === 'claimed') {
+        badgeHtml = `<span class="tag tag-amber">Claimed — aap</span>`;
+        actionsHtml = `
+          <div class="alert-actions">
+            <div style="font-size:12px;color:var(--green);font-weight:500;">Pickup en route — ETA 25 min</div>
+            <button class="btn-delivered" onclick="markDelivered(${a.id})">✓ Delivered Mark Karein</button>
+          </div>`;
+      } else if (status === 'delivered') {
+        badgeHtml = `<span class="badge-delivered">Delivered</span>`;
+        actionsHtml = `<div style="font-size:12px;color:var(--text-muted);">${a.donor} · Kal · Ahmed bhai ne deliver kiya</div>`;
+      } else if (status === 'skipped') {
+        badgeHtml = `<span class="badge-expired">Skipped</span>`;
+        actionsHtml = `<div style="font-size:12px;color:var(--text-faint);">Pass kar diya</div>`;
+      }
+
+      return `
+        <div class="alert-card ${a.urgent && status === 'new' ? 'urgent' : ''}">
+          <div class="alert-top">
+            <span class="alert-name">${a.name}</span>
+            ${badgeHtml}
+          </div>
+          <div class="alert-meta">
+            ${a.donor} · ${a.area} · <strong>${a.dist} dur</strong><br>
+            Pickup window: <strong>${a.window}</strong>
+          </div>
+          ${actionsHtml}
+        </div>`;
+    }).join('');
+  }
+
+  function acceptAlert(id) {
+    alertStatuses[id] = 'claimed';
+    renderAlerts();
+    const n = document.getElementById('ngo-pickups');
+    n.textContent = parseInt(n.textContent) + 1;
+    showToast('✓ Claim ho gaya! Volunteer ko assign karein.');
+  }
+
+  function skipAlert(id) {
+    alertStatuses[id] = 'skipped';
+    renderAlerts();
+  }
+
+  function markDelivered(id) {
+    alertStatuses[id] = 'delivered';
+    renderAlerts();
+    showToast('🎉 Delivery complete! Jazak Allah Khair.');
+  }
+
+  // ── DONOR FORM ──
+  function selectWindow(el) {
+    document.querySelectorAll('.window-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function submitListing() {
+    const type = document.getElementById('food-type').value;
+    const qty = document.getElementById('food-qty').value;
+    const desc = document.getElementById('food-desc').value;
+    const name = document.getElementById('donor-name').value;
+    const addr = document.getElementById('donor-address').value;
+
+    if (!type || !qty || !desc || !name || !addr) {
+      showToast('⚠ Sab zaroori fields bharein pehle.');
+      return;
+    }
+
+    // Add to listings
+    const newListing = {
+      id: listings.length + 1,
+      name: desc.length > 24 ? desc.substring(0, 24) + '...' : desc,
+      type: type.replace(/^[^\s]+\s/, ''),
+      qty: `~${qty} portions`,
+      location: addr.split(',')[0],
+      donor: name,
+      initials: name.substring(0,2).toUpperCase(),
+      time: "Abhi abhi",
+      status: "available",
+      tag: "tag-green"
+    };
+    listings.unshift(newListing);
+
+    // Update stats
+    const meals = document.getElementById('total-meals');
+    meals.textContent = parseInt(meals.textContent.replace(/,/g,'')) + parseInt(qty);
+    const donations = document.getElementById('total-donations');
+    donations.textContent = parseInt(donations.textContent) + 1;
+
+    // Add to history
+    const hist = document.getElementById('donor-history');
+    const newItem = document.createElement('div');
+    newItem.className = 'hist-item';
+    newItem.innerHTML = `
+      <div class="hist-top"><span class="hist-name">${newListing.name}</span><span class="badge-live">Live</span></div>
+      <div class="hist-detail">${qty} portions · ${addr.split(',')[0]} · Abhi</div>
+      <div class="hist-ngo">Claim pending...</div>`;
+    hist.insertBefore(newItem, hist.firstChild);
+
+    // Reset form
+    document.getElementById('food-type').value = '';
+    document.getElementById('food-qty').value = '';
+    document.getElementById('food-desc').value = '';
+    document.getElementById('food-note').value = '';
+    document.querySelectorAll('.window-btn').forEach(b => b.classList.remove('selected'));
+
+    document.getElementById('success-modal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('success-modal').classList.remove('open');
+  }
+
+  // ── TOAST ──
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── INIT ──
+  renderListings();
+  renderAlerts();
+</script>
+</body>
+</html>
